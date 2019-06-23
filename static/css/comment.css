@@ -1,0 +1,7 @@
+.comment {
+   padding: 10px 0 10px 0;
+   .body {
+        background: #C0C0C0;
+        padding: 10px 15px;
+   }
+}
