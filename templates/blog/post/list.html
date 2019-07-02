@@ -42,21 +42,20 @@
         </div>
         <br>
         <div class="panel panel-default">
-            <div class="panel-heading">惊闻！蔡徐坤在清华球馆内唱鸡你太美！</div>
-            <div class="panel-body">
-                <p>Skr, Skr, Skr</p>
-                <p>你看这个碗，它又大又圆</p>
-                <p>你看这碗面，它又长又宽</p>
-            </div>
-        </div>
-        <div class="panel panel-default">
             <div class="panel-heading">标签</div>
             <div class="panel-body">
                 {% for tag in tags %}
                 <p><a href="{% url "blog:post_list_by_tag" tag.slug %}">{{ tag.name }}</a></p>
                 {% endfor %}
             </div>
-
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">文章归档</div>
+            <div class="panel-body">
+                {% for date in dates %}
+                <p><a href="{% url 'blog:archive'%}?year={{date|slice:':4'}}&month={{date|slice:'4:'}}">{{date|slice:':4'}}年{{date|slice:'4:'}}月文章</a></p>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

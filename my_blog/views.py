@@ -4,6 +4,7 @@ from .models import Article, Comment
 from .forms import CommentForm
 
 from taggit.models import Tag
+import markdown
 
 # Create your views here.
 
@@ -19,7 +20,7 @@ def article_list(request, tag_slug=None):
         tag = get_object_or_404(Tag, slug=tag_slug)
         object_list = object_list.filter(tags__in=[tag])
 
-    paginator = Paginator(object_list, 5)
+    paginator = Paginator(object_list, 3)
     page = request.GET.get('page')
     try:
         posts = paginator.page(page)
@@ -31,12 +32,26 @@ def article_list(request, tag_slug=None):
     # 获取所有标签
     tags = Article.tags.all()
 
-    return render(request, 'blog/post/list.html', {'page': page, 'posts': posts, 'tag': tag, 'tags': tags})
+    # 文章归档功能实现
+    # 获取所有时间
+    dates = Article.objects.distinct_date()
+    print(dates)
+
+    return render(request, 'blog/post/list.html', {'page': page, 'posts': posts, 'tag': tag, 'tags': tags, 'dates': dates})
 
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Article, slug=post, status="published", publish__year=year, publish__month=month,
                              publish__day=day)
+
+    # 将 markdown 语法渲染成 HTML 样式
+    post.body = markdown.markdown(post.body, extensions=[
+        # 添加拓展
+        'markdown.extensions.extra',
+        'markdown.extensions.codehilite',
+        'markdown.extensions.toc',
+    ])
+
     comments = post.comments.filter(active=True)
 
     new_comment = None
@@ -48,7 +63,7 @@ def post_detail(request, year, month, day, post):
             new_comment.post = post
             new_comment.save()
     else:
-        comment_form = CommentForm
+        comment_form = CommentForm()
     return render(request, 'blog/post/detail.html', {'post': post, 'comments': comments, 'new_comment': new_comment, 'comment_form': comment_form})
 
 
@@ -74,3 +89,10 @@ def search(request):
                 query_set.add(i)
             # 后期可以搞下分页
     return render(request, 'blog/search.html', {'posts': query_set})
+
+
+def archive(request):
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    archives = Article.objects.filter(publish__year=year, publish__month=month)
+    return render(request, 'blog/archive.html', {'posts':archives})

@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'my_blog',
     'taggit',
-    'ckeditor'
+    'mdeditor',
+    'pygments'
 ]
 
 MIDDLEWARE = [
@@ -127,6 +128,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+# 添加媒体路径
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+MEDIA_URL = '/media/'
 
 # 发送邮件
 # 不成功

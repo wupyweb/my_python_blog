@@ -1,5 +1,8 @@
 from django.contrib import admin
 from .models import Article, Comment
+from django.db import models
+
+from mdeditor.widgets import MDEditorWidget
 
 # Register your models here.
 # admin.site.register(Article)
@@ -14,6 +17,10 @@ class PostAdmin(admin.ModelAdmin):
     raw_id_fields = ('author',)
     date_hierarchy = 'publish'
     ordering = ('status', 'publish',)
+
+    formfield_overrides = {
+        models.TextField: {'widget': MDEditorWidget}
+    }
 
 
 admin.site.register(Comment)

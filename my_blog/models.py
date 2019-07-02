@@ -4,8 +4,18 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 from taggit.managers import TaggableManager
+from mdeditor.fields import MDTextField
 
 # Create your models here.
+
+
+class ArticleManager(models.Manager):
+    def distinct_date(self):
+        archive_list = []
+        for date in self.filter(status='published').values('publish'):
+            archive_list.append(date['publish'].strftime('%Y%m'))
+        archive_list.sort()
+        return set(archive_list)
 
 
 class Article(models.Model):
@@ -19,8 +29,10 @@ class Article(models.Model):
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     tags = TaggableManager()
+    objects = ArticleManager()
 
     class Meta:
+        # verbose_name = "文章"
         ordering = ('-publish',)
 
     def __str__(self):
