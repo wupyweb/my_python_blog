@@ -12,10 +12,22 @@ from mdeditor.fields import MDTextField
 class ArticleManager(models.Manager):
     def distinct_date(self):
         archive_list = []
+        # .values 是把所有日期取出来
         for date in self.filter(status='published').values('publish'):
-            archive_list.append(date['publish'].strftime('%Y%m'))
-        archive_list.sort()
-        return set(archive_list)
+            # 上面取出来的值是 字典
+            # 然后把日期格式化为 年月
+            date = date['publish'].strftime('%Y%m')
+            # 日期去重
+            # 如果格式化后的日期不在列表中，则把它添加至列表中
+            if date not in archive_list:
+                archive_list.append(date)
+        # 列表反转
+        archive_list.sort(reverse=True)
+        return archive_list
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=64)
 
 
 class Article(models.Model):
@@ -29,6 +41,7 @@ class Article(models.Model):
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     tags = TaggableManager()
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, default=None)
     objects = ArticleManager()
 
     class Meta:

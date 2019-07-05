@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, Comment
+from .models import Article, Comment, Category
 from django.db import models
 
 from mdeditor.widgets import MDEditorWidget
@@ -24,3 +24,4 @@ class PostAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Comment)
+admin.site.register(Category)
